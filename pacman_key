@@ -39,7 +39,7 @@ options:
 
 EXAMPLES='''
 # Add a key to the pacman keyring
-- pacman_key: id=A9244FB5E93F11F0E975337FAE6866C7962DDE58 state=present
+- pacman_key: id=A9244FB5E93F11F0E975337FAE6866C7962DDE58 keyserver=keys.mozilla.org state=present
 
 # Remove a key from the pacman keyring
 - pacman_key: id=A9244FB5E93F11F0E975337FAE6866C7962DDE58 state=absent
@@ -52,7 +52,7 @@ def has_key(module, key_id):
     rc, _, _ = module.run_command(cmd, check_rc=False)
     return rc == 0
 
-def add_key(module, key_id):
+def add_key(module, key_id, keyserver=None):
     if has_key(module, key_id):
         module.exit_json(changed=False, msg='the key already exists in the pacman keyring')
 
@@ -60,6 +60,10 @@ def add_key(module, key_id):
         module.exit_json(changed=True)
 
     cmd = ['pacman-key', '-r', key_id]
+
+    if keyserver:
+        cmd.append(['--keyserver', keyserver])
+
     rc, out_retrive, err_retrive = module.run_command(cmd, check_rc=True)
 
     cmd = ['pacman-key', '--lsign-key', key_id]
@@ -91,6 +95,9 @@ def main():
             },
             'id': {
                 'required': True,
+            },
+            'keyserver' {
+                'required': False,
             }
         },
         supports_check_mode = True
@@ -99,7 +106,7 @@ def main():
     params = module.params
 
     if params['state'] == 'present':
-        add_key(module, params['id'])
+        add_key(module, params['id'], params['keyserver'])
     elif params['state'] == 'absent':
         remove_key(module, params['id'])
 
