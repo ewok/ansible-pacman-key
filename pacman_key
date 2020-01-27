@@ -96,7 +96,7 @@ def main():
             'id': {
                 'required': True,
             },
-            'keyserver' {
+            'keyserver': {
                 'required': False,
             }
         },
