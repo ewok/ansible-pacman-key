@@ -62,7 +62,8 @@ def add_key(module, key_id, keyserver=None):
     cmd = ['pacman-key', '-r', key_id]
 
     if keyserver:
-        cmd.append(['--keyserver', keyserver])
+        cmd.append('--keyserver')
+        cmd.append(keyserver)
 
     rc, out_retrive, err_retrive = module.run_command(cmd, check_rc=True)
 
